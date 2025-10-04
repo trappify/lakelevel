@@ -16,6 +16,7 @@ Running without any flags prints the help text with usage examples (Siljan inclu
 - Manual/HACS installation instructions live in `docs/installation.md`.
 - Configuration flow details are documented in `docs/configuration.md`.
 - Sensor behavior and attributes are covered in `docs/usage.md`.
+- Disclaimer: this project is an unofficial community integration and is not affiliated with Vattenregleringsföretagen. Use at your own risk.
 
 List available rivers or lakes:
 

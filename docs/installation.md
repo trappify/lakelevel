@@ -11,3 +11,5 @@
 1. In HACS, add this repository as a custom integration source.
 2. Install **Lake Level** from the Integrations tab.
 3. Restart Home Assistant and add the integration via the UI.
+
+> **Note:** This integration is community-maintained and not affiliated with Vattenregleringsföretagen. Use at your own risk.
