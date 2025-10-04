@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: lakelevel
+Version: 0.1.0
+Summary: Fetch lake Siljan level from Vattenregleringsföretagen
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: requests
+Requires-Dist: beautifulsoup4
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: responses; extra == "dev"
+
+# Lake Level
+
+CLI utility to fetch the latest lake level for Siljan.

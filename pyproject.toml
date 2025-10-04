@@ -1,0 +1,20 @@
+[project]
+name = "lakelevel"
+version = "0.1.0"
+description = "Fetch lake Siljan level from Vattenregleringsföretagen"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests",
+    "beautifulsoup4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "responses",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
