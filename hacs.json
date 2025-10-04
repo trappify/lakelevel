@@ -1,0 +1,11 @@
+{
+  "name": "Lake Level",
+  "country": "SE",
+  "domains": ["lakelevel"],
+  "render_readme": true,
+  "homeassistant": "2024.1.0",
+  "filename": "custom_components/lakelevel/manifest.json",
+  "resources": [],
+  "zip_release": false,
+  "category": "integration"
+}

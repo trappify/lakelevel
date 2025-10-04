@@ -1,4 +1,4 @@
-"""Fetch and parse lake level data for Swedish lakes."""
+"""Vendored lake level client for Home Assistant integration."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ _TIMESTAMP_CELL_INDEX = 9
 
 
 class LakeLevelError(RuntimeError):
-    """Raised when we cannot parse the requested measurement."""
+    """Raised when a measurement cannot be parsed."""
 
 
 @dataclass(frozen=True)
@@ -37,7 +37,6 @@ def get_lake_level(
     session: Optional[requests.Session] = None,
     timeout: float | None = None,
 ) -> LakeMeasurement:
-    """Retrieve the latest lake level for the given river/lake combination."""
     session = session or requests.Session()
     resolved_timeout = DEFAULT_TIMEOUT if timeout is None else timeout
 
@@ -57,7 +56,6 @@ def get_lake_level(
 def get_siljan_level(
     session: Optional[requests.Session] = None, timeout: float | None = None
 ) -> LakeMeasurement:
-    """Backward-compatible helper for the default Siljan measurement."""
     return get_lake_level(
         DEFAULT_RIVER,
         DEFAULT_LAKE,
@@ -71,7 +69,6 @@ def list_lakes(
     session: Optional[requests.Session] = None,
     timeout: float | None = None,
 ) -> List[str]:
-    """Return all lake names for the provided river."""
     session = session or requests.Session()
     resolved_timeout = DEFAULT_TIMEOUT if timeout is None else timeout
 
@@ -91,12 +88,10 @@ def list_lakes(
 def list_rivers(
     session: Optional[requests.Session] = None, timeout: float | None = None
 ) -> List[str]:
-    """Return all river names available on the landing page."""
     session = session or requests.Session()
     resolved_timeout = DEFAULT_TIMEOUT if timeout is None else timeout
 
     landing_html = _prime_session(session, resolved_timeout)
-    # Preserve insertion order by reading from the select again
     soup = BeautifulSoup(landing_html, "html.parser")
     select = soup.find("select", attrs={"name": "Ralv"})
     if select is None:

@@ -1,0 +1,26 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Select river",
+        "description": "Choose the river (älv) to fetch lake levels from.",
+        "data": {
+          "river": "River"
+        }
+      },
+      "lake": {
+        "title": "Select lake",
+        "description": "River: {river}",
+        "data": {
+          "lake": "Lake",
+          "fetch_time": "Fetch time (HH:MM)",
+          "retries": "Retries"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to reach vattenreglering.se"
+    },
+    "abort": {}
+  }
+}
