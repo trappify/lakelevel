@@ -9,16 +9,14 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
-from .lib import list_lakes, list_rivers
+from .lib import DEFAULT_FETCH_TIME, list_lakes, list_rivers
 
 from .const import (
-    CONF_FETCH_TIME,
     CONF_FETCH_TIMES,
     CONF_LAKE,
     CONF_RIVER,
     CONF_RETRIES,
     CONF_UPDATES_PER_DAY,
-    DEFAULT_FETCH_TIME,
     DEFAULT_RETRIES,
     DOMAIN,
     MAX_UPDATES_PER_DAY,
@@ -99,10 +97,18 @@ class LakeLevelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     vol.Required(
                         CONF_UPDATES_PER_DAY, default=1
                     ): vol.All(vol.Coerce(int), vol.Range(min=1, max=MAX_UPDATES_PER_DAY)),
-                    vol.Optional(_TIME_KEY_TEMPLATE.format(1), default=defaults[0]): _TIME_VALIDATOR,
-                    vol.Optional(_TIME_KEY_TEMPLATE.format(2), default=defaults[1]): _TIME_VALIDATOR,
-                    vol.Optional(_TIME_KEY_TEMPLATE.format(3), default=defaults[2]): _TIME_VALIDATOR,
-                    vol.Optional(_TIME_KEY_TEMPLATE.format(4), default=defaults[3]): _TIME_VALIDATOR,
+                    vol.Optional(
+                        _TIME_KEY_TEMPLATE.format(1), default=defaults[0]
+                    ): _TIME_VALIDATOR,
+                    vol.Optional(
+                        _TIME_KEY_TEMPLATE.format(2), default=defaults[1]
+                    ): _TIME_VALIDATOR,
+                    vol.Optional(
+                        _TIME_KEY_TEMPLATE.format(3), default=defaults[2]
+                    ): _TIME_VALIDATOR,
+                    vol.Optional(
+                        _TIME_KEY_TEMPLATE.format(4), default=defaults[3]
+                    ): _TIME_VALIDATOR,
                     vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): vol.All(
                         vol.Coerce(int), vol.Range(min=1, max=10)
                     ),
