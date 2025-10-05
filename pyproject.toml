@@ -1,6 +1,6 @@
 [project]
 name = "lakelevel"
-version = "0.2.0"
+version = "0.3.0"
 description = "Fetch lake Siljan level from Vattenregleringsföretagen"
 readme = "README.md"
 requires-python = ">=3.10"

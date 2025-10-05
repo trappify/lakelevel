@@ -1,6 +1,6 @@
 # Lake Level
 
-CLI utility to fetch the latest lake level for Siljan (or any other lake exposed on Vattenregleringsföretagen). A Home Assistant custom integration (with the scraper bundled for offline installs) lives in `custom_components/lakelevel`.
+CLI utility to fetch the latest lake level for Siljan (or any other lake exposed on Vattenregleringsföretagen). A Home Assistant custom integration (with the scraper bundled for offline installs) lives in `custom_components/lakelevel` and supports up to four scheduled fetches per day.
 
 ## Quick start
 
