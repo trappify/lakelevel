@@ -2,7 +2,7 @@
   "domain": "lakelevel",
   "name": "Lake Level",
   "codeowners": ["@trappify"],
-  "version": "0.3.4",
+  "version": "0.3.5",
   "documentation": "https://github.com/trappify/lakelevel",
   "issue_tracker": "https://github.com/trappify/lakelevel/issues",
   "requirements": [],

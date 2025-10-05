@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented here. Releases follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.5] - 2025-10-05
+- Fix missing `parse_time` import used during time validation.
+
 ## [0.3.4] - 2025-10-05
 - Validate time inputs in config and options flows with clear error messages.
 
