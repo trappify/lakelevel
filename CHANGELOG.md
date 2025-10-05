@@ -2,6 +2,9 @@
 
 All notable changes to this project are documented here. Releases follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.3] - 2025-10-05
+- Normalize config-flow time inputs so schema serialization works consistently.
+
 ## [0.3.2] - 2025-10-05
 - Ensure config flow schema serializes correctly across all Home Assistant versions.
 
