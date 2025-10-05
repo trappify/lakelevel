@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here. Releases follow [Semantic Versioning](https://semver.org/).
 
+## [0.3.1] - 2025-10-05
+- Fix config flow schema serialization so setup works on a fresh install.
+- Add debug logging around lake loading to aid troubleshooting.
+
 ## [0.3.0] - 2025-10-04
 - Allow up to four fetches per day with configurable times and options flow.
 - Add config entry migration and daily scheduler improvements.
