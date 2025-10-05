@@ -13,7 +13,11 @@
         "description": "River: {river}",
         "data": {
           "lake": "Lake",
-          "fetch_time": "Fetch time (HH:MM)",
+          "updates_per_day": "Fetches per day",
+          "fetch_time_1": "Time 1 (HH:MM)",
+          "fetch_time_2": "Time 2 (HH:MM)",
+          "fetch_time_3": "Time 3 (HH:MM)",
+          "fetch_time_4": "Time 4 (HH:MM)",
           "retries": "Retries"
         }
       }
@@ -22,5 +26,19 @@
       "cannot_connect": "Unable to reach vattenreglering.se"
     },
     "abort": {}
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "updates_per_day": "Fetches per day",
+          "fetch_time_1": "Time 1 (HH:MM)",
+          "fetch_time_2": "Time 2 (HH:MM)",
+          "fetch_time_3": "Time 3 (HH:MM)",
+          "fetch_time_4": "Time 4 (HH:MM)",
+          "retries": "Retries"
+        }
+      }
+    }
   }
 }

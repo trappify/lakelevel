@@ -58,11 +58,15 @@ async def async_migrate_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         data = dict(entry.data)
         fetch_time = data.pop(CONF_FETCH_TIME, DEFAULT_FETCH_TIME)
         retries = data.get(CONF_RETRIES, DEFAULT_RETRIES)
-        data[CONF_FETCH_TIMES] = [fetch_time]
-        data[CONF_UPDATES_PER_DAY] = 1
+        data.setdefault(CONF_FETCH_TIMES, [fetch_time])
+        data.setdefault(CONF_UPDATES_PER_DAY, len(data[CONF_FETCH_TIMES]))
         data[CONF_RETRIES] = retries
-        entry.version = 2
-        hass.config_entries.async_update_entry(entry, data=data, options={})
+        hass.config_entries.async_update_entry(
+            entry,
+            data=data,
+            options={},
+            version=2,
+        )
         _LOGGER.debug("Migrated Lake Level entry to version 2")
     return True
 
