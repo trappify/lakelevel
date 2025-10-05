@@ -65,7 +65,7 @@ class LakeLevelCoordinator(DataUpdateCoordinator[LakeMeasurement | None]):
         @callback
         def _handle_time(_: datetime) -> None:
             self.async_set_updated_data(None)
-            self.async_request_refresh()
+            self.hass.async_create_task(self.async_request_refresh())
 
         self._unsub = async_track_utc_time_change(
             self.hass,
