@@ -9,7 +9,7 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 
-from .lib import DEFAULT_FETCH_TIME, list_lakes, list_rivers
+from .lib import list_lakes, list_rivers
 
 from .const import (
     CONF_FETCH_TIMES,
@@ -18,6 +18,7 @@ from .const import (
     CONF_RETRIES,
     CONF_UPDATES_PER_DAY,
     DEFAULT_RETRIES,
+    DEFAULT_FETCH_TIME,
     DOMAIN,
     MAX_UPDATES_PER_DAY,
 )
