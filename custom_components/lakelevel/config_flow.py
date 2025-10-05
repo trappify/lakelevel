@@ -27,7 +27,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 _TIME_KEY_TEMPLATE = "fetch_time_{}"
-_TIME_VALIDATOR = vol.Match(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
+_TIME_VALIDATOR = vol.All(str, vol.Match(r"^(?:[01]\d|2[0-3]):[0-5]\d$"))
 _DEFAULT_TIMES = ["06:00", "12:00", "18:00", "00:00"]
 
 
