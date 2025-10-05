@@ -17,6 +17,7 @@
 - Default timeout per request is 180 s to accommodate the slow upstream site; the CLI flag lets operators override on demand. A single river fetch can serve multiple lake lookups without extra requests.
 - Rivers can be discovered from the landing page; helpers expose both river and lake lists for reuse.
 - The Home Assistant integration schedules up to four daily fetches (default one at 06:00) with retry logic to protect the slow upstream service.
+- Release reminder: always bump both `pyproject.toml` and `custom_components/lakelevel/manifest.json` versions before shipping HACS updates (see `docs/releasing.md`).
 
 ## Usage
 ```bash
