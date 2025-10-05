@@ -23,7 +23,8 @@
       }
     },
     "error": {
-      "cannot_connect": "Unable to reach vattenreglering.se"
+      "cannot_connect": "Unable to reach vattenreglering.se",
+      "invalid_time": "Enter time as HH:MM"
     }
   },
   "options": {

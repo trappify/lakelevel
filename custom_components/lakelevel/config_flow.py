@@ -26,7 +26,6 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 _TIME_KEY_TEMPLATE = "fetch_time_{}"
-_TIME_VALIDATOR = vol.All(vol.Coerce(str), vol.Match(r"^(?:[01]\d|2[0-3]):[0-5]\d$"))
 _DEFAULT_TIMES = ["06:00", "12:00", "18:00", "00:00"]
 
 
@@ -63,23 +62,6 @@ class LakeLevelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         errors: dict[str, str] = {}
 
-        if user_input is not None:
-            updates = user_input[CONF_UPDATES_PER_DAY]
-            times: list[str] = []
-            for index in range(MAX_UPDATES_PER_DAY):
-                key = _TIME_KEY_TEMPLATE.format(index + 1)
-                value = user_input.get(key, DEFAULT_FETCH_TIME)
-                if index < updates:
-                    times.append(value)
-            data = {
-                CONF_RIVER: self._selected_river,
-                CONF_LAKE: user_input[CONF_LAKE],
-                CONF_FETCH_TIMES: times,
-                CONF_UPDATES_PER_DAY: updates,
-                CONF_RETRIES: user_input[CONF_RETRIES],
-            }
-            return self.async_create_entry(title=f"{data[CONF_LAKE]} ({data[CONF_RIVER]})", data=data)
-
         try:
             _LOGGER.debug("Loading lakes for river %s", self._selected_river)
             lakes = await self.hass.async_add_executor_job(list_lakes, self._selected_river)
@@ -89,6 +71,47 @@ class LakeLevelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             lakes = []
 
         defaults = self._default_times()
+        current_input = user_input or {}
+        current_times = [
+            current_input.get(_TIME_KEY_TEMPLATE.format(index + 1), defaults[index])
+            for index in range(MAX_UPDATES_PER_DAY)
+        ]
+        raw_updates = current_input.get(CONF_UPDATES_PER_DAY, 1)
+        raw_retries = current_input.get(CONF_RETRIES, DEFAULT_RETRIES)
+
+        try:
+            current_updates = int(raw_updates)
+        except (TypeError, ValueError):
+            current_updates = 1
+        current_updates = max(1, min(MAX_UPDATES_PER_DAY, current_updates))
+
+        try:
+            current_retries = int(raw_retries)
+        except (TypeError, ValueError):
+            current_retries = DEFAULT_RETRIES
+
+        valid_times: list[str] = []
+        if user_input is not None and "base" not in errors:
+            for index in range(current_updates):
+                key = _TIME_KEY_TEMPLATE.format(index + 1)
+                value = current_times[index]
+                if parse_time(value) is None:
+                    errors[key] = "invalid_time"
+                else:
+                    valid_times.append(value)
+
+            if not errors:
+                data = {
+                    CONF_RIVER: self._selected_river,
+                    CONF_LAKE: user_input[CONF_LAKE],
+                    CONF_FETCH_TIMES: valid_times,
+                    CONF_UPDATES_PER_DAY: current_updates,
+                    CONF_RETRIES: current_retries,
+                }
+                return self.async_create_entry(
+                    title=f"{data[CONF_LAKE]} ({data[CONF_RIVER]})", data=data
+                )
+
         schema = (
             vol.Schema({})
             if errors
@@ -96,21 +119,21 @@ class LakeLevelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(CONF_LAKE): vol.In(lakes),
                     vol.Required(
-                        CONF_UPDATES_PER_DAY, default=1
+                        CONF_UPDATES_PER_DAY, default=current_updates
                     ): vol.All(vol.Coerce(int), vol.Range(min=1, max=MAX_UPDATES_PER_DAY)),
                     vol.Optional(
-                        _TIME_KEY_TEMPLATE.format(1), default=defaults[0]
-                    ): _TIME_VALIDATOR,
+                        _TIME_KEY_TEMPLATE.format(1), default=current_times[0]
+                    ): str,
                     vol.Optional(
-                        _TIME_KEY_TEMPLATE.format(2), default=defaults[1]
-                    ): _TIME_VALIDATOR,
+                        _TIME_KEY_TEMPLATE.format(2), default=current_times[1]
+                    ): str,
                     vol.Optional(
-                        _TIME_KEY_TEMPLATE.format(3), default=defaults[2]
-                    ): _TIME_VALIDATOR,
+                        _TIME_KEY_TEMPLATE.format(3), default=current_times[2]
+                    ): str,
                     vol.Optional(
-                        _TIME_KEY_TEMPLATE.format(4), default=defaults[3]
-                    ): _TIME_VALIDATOR,
-                    vol.Optional(CONF_RETRIES, default=DEFAULT_RETRIES): vol.All(
+                        _TIME_KEY_TEMPLATE.format(4), default=current_times[3]
+                    ): str,
+                    vol.Optional(CONF_RETRIES, default=current_retries): vol.All(
                         vol.Coerce(int), vol.Range(min=1, max=10)
                     ),
                 }
@@ -136,43 +159,75 @@ class LakeLevelOptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_init(self, user_input: dict | None = None) -> FlowResult:
         data = {**self._entry.data, **self._entry.options}
-        retries = data.get(CONF_RETRIES, DEFAULT_RETRIES)
-        times: list[str] = data.get(CONF_FETCH_TIMES) or [data.get(CONF_FETCH_TIME, DEFAULT_FETCH_TIME)]
-        updates = data.get(CONF_UPDATES_PER_DAY, len(times))
-        times = (times + _DEFAULT_TIMES)[:MAX_UPDATES_PER_DAY]
+        errors: dict[str, str] = {}
 
+        existing_times = data.get(CONF_FETCH_TIMES) or [data.get(CONF_FETCH_TIME, DEFAULT_FETCH_TIME)]
+        existing_times = (existing_times + _DEFAULT_TIMES)[:MAX_UPDATES_PER_DAY]
+        raw_existing_updates = data.get(CONF_UPDATES_PER_DAY, len(existing_times))
+
+        current_input = user_input or {}
+        current_times = [
+            current_input.get(
+                _TIME_KEY_TEMPLATE.format(index + 1), existing_times[index]
+            )
+            for index in range(MAX_UPDATES_PER_DAY)
+        ]
+
+        raw_updates = current_input.get(CONF_UPDATES_PER_DAY, raw_existing_updates)
+        try:
+            current_updates = int(raw_updates)
+        except (TypeError, ValueError):
+            current_updates = max(1, len(existing_times))
+        current_updates = max(1, min(MAX_UPDATES_PER_DAY, current_updates))
+
+        raw_retries = current_input.get(CONF_RETRIES, data.get(CONF_RETRIES, DEFAULT_RETRIES))
+        try:
+            current_retries = int(raw_retries)
+        except (TypeError, ValueError):
+            current_retries = DEFAULT_RETRIES
+
+        valid_times: list[str] = []
         if user_input is not None:
-            updates = user_input[CONF_UPDATES_PER_DAY]
-            times = []
-            for index in range(MAX_UPDATES_PER_DAY):
+            for index in range(current_updates):
                 key = _TIME_KEY_TEMPLATE.format(index + 1)
-                value = user_input.get(key, DEFAULT_FETCH_TIME)
-                if index < updates:
-                    times.append(value)
+                value = current_times[index]
+                if parse_time(value) is None:
+                    errors[key] = "invalid_time"
+                else:
+                    valid_times.append(value)
 
-            options = {
-                CONF_FETCH_TIMES: times,
-                CONF_UPDATES_PER_DAY: updates,
-                CONF_RETRIES: user_input[CONF_RETRIES],
-            }
-            return self.async_create_entry(title="", data=options)
+            if not errors:
+                options = {
+                    CONF_FETCH_TIMES: valid_times,
+                    CONF_UPDATES_PER_DAY: current_updates,
+                    CONF_RETRIES: current_retries,
+                }
+                return self.async_create_entry(title="", data=options)
 
         schema = vol.Schema(
             {
                 vol.Required(
-                    CONF_UPDATES_PER_DAY, default=updates
+                    CONF_UPDATES_PER_DAY, default=current_updates
                 ): vol.All(vol.Coerce(int), vol.Range(min=1, max=MAX_UPDATES_PER_DAY)),
-                vol.Optional(_TIME_KEY_TEMPLATE.format(1), default=times[0]): _TIME_VALIDATOR,
-                vol.Optional(_TIME_KEY_TEMPLATE.format(2), default=times[1]): _TIME_VALIDATOR,
-                vol.Optional(_TIME_KEY_TEMPLATE.format(3), default=times[2]): _TIME_VALIDATOR,
-                vol.Optional(_TIME_KEY_TEMPLATE.format(4), default=times[3]): _TIME_VALIDATOR,
-                vol.Optional(CONF_RETRIES, default=retries): vol.All(
+                vol.Optional(
+                    _TIME_KEY_TEMPLATE.format(1), default=current_times[0]
+                ): str,
+                vol.Optional(
+                    _TIME_KEY_TEMPLATE.format(2), default=current_times[1]
+                ): str,
+                vol.Optional(
+                    _TIME_KEY_TEMPLATE.format(3), default=current_times[2]
+                ): str,
+                vol.Optional(
+                    _TIME_KEY_TEMPLATE.format(4), default=current_times[3]
+                ): str,
+                vol.Optional(CONF_RETRIES, default=current_retries): vol.All(
                     vol.Coerce(int), vol.Range(min=1, max=10)
                 ),
             }
         )
 
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="init", data_schema=schema, errors=errors)
 
 
 async def async_get_options_flow(entry: config_entries.ConfigEntry) -> LakeLevelOptionsFlowHandler:
