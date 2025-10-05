@@ -13,7 +13,7 @@ def load_fixture(name: str) -> str:
 
 
 def test_parse_lake_level_returns_measurement() -> None:
-    html = load_fixture("dalalven_siljan.html")
+    html = load_fixture("dalalven_sample.html")
     measurement = parse_lake_level(html, "Dalälven", "Siljan")
 
     assert isinstance(measurement, LakeMeasurement)

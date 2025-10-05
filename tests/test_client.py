@@ -18,7 +18,7 @@ FIXTURE_DIR = Path(__file__).parent / "fixtures"
 LANDING_HTML = (FIXTURE_DIR / "landing.html").read_text(encoding="utf-8").encode(
     "iso-8859-1"
 )
-LAKE_HTML = (FIXTURE_DIR / "dalalven_siljan.html").read_text(encoding="utf-8").encode(
+LAKE_HTML = (FIXTURE_DIR / "dalalven_sample.html").read_text(encoding="utf-8").encode(
     "iso-8859-1"
 )
 
