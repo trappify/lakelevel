@@ -82,6 +82,7 @@ class LakeLevelConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title=f"{data[CONF_LAKE]} ({data[CONF_RIVER]})", data=data)
 
         try:
+            _LOGGER.debug("Loading lakes for river %s", self._selected_river)
             lakes = await self.hass.async_add_executor_job(list_lakes, self._selected_river)
         except Exception as exc:  # pragma: no cover - network failure path
             _LOGGER.exception("Failed to load lakes", exc_info=exc)
